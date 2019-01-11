@@ -210,10 +210,10 @@
 
         <!-- Modal -->
         <div id="historyModal" class="modal fade" role="dialog">
-            <div class="modal-dialog modal-lg" style="margin-left: 15%;width: 70%;">
+            <div class="modal-dialog modal-lg" style="">
                 <div class="modal-content" style="color:black">
                     <div class="modal-body" style="zoom: 0.65;overflow: scroll;">
-                        <table id="historyDatatable" class="table table-dark table-striped table-hover" style="color: black;width: 100% !important;">
+                        <table id="historyDatatable" class="table table-striped table-hover" style="color: black;width: 100% !important;">
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -265,7 +265,7 @@
                             <!-- loading spinner -->
                             <div id="sqlSpinner" class="spinner"></div>
                             <div style="display:none;margin: 40px;">
-                                <table id="dumpFileList" class="table table-dark table-striped table-hover" style="color: black;">
+                                <table id="dumpFileList" class="table  table-striped table-hover" style="color: black;">
                                     <thead>
                                         <tr>
                                             <th>Name</th>
@@ -357,7 +357,8 @@
                 });
                 db = openDatabase('ServiceCheckerUI', '1.0', 'Checker UI DB DB', 2 * 1024 * 1024); //Creating Connection
                 db.transaction(function (tx) {
-                    tx.executeSql('CREATE TABLE IF NOT EXISTS history (ID  INTEGER PRIMARY KEY, SUB_URL, METHOD, PARAMETERS, RESPONSE, STATUS_CODE , REQUEST_TIME DEFAULT CURRENT_TIMESTAMP)');
+                    tx.executeSql('CREATE TABLE IF NOT EXISTS history (ID  INTEGER PRIMARY KEY, SUB_URL, METHOD, PARAMETERS, RESPONSE, STATUS_CODE , REQUEST_TIME DEFAULT CURRENT_TIMESTAMP, BASE_URL)');
+                    tx.executeSql('ALTER TABLE history ADD COLUMN BASE_URL');
                 });
                 if (localStorage.servletName != undefined && localStorage.data != undefined && localStorage.requestMethod != undefined) {
                     $("#servletName").val(localStorage.servletName);
@@ -520,7 +521,11 @@
                                                 response,
                                                 xhr.status,
                                                 href.join("/") + "/"
-                                            ]);
+                                            ],
+                                            function () {},
+                                            function (tx, error) {
+                                                console.log(error);
+                                            });
                                 });
                                 if ($("#autoRequest").parent().attr("class").includes("off")) {
                                     $("#btnDoRequest").click();
@@ -558,7 +563,11 @@
                                                 jqXHR.responseText,
                                                 jqXHR.status,
                                                 href.join("/") + "/"
-                                            ]);
+                                            ],
+                                            function () {},
+                                            function (tx, error) {
+                                                console.log(error + "");
+                                            });
                                 });
                             }
                         };
@@ -963,10 +972,10 @@
                                                         });
                                             });
                                         });
-                                        if ($("#historyDatatable tbody tr").size() - $(".dataTables_empty").size() <= 0)
-                                            $(".footer-datatable").hide();
-                                        else
-                                            $(".footer-datatable").show();
+//                                        if ($("#historyDatatable tbody tr").size() - $(".dataTables_empty").size() <= 0)
+//                                            $(".footer-datatable").hide();
+//                                        else
+//                                            $(".footer-datatable").show();
                                         this.api().columns().every(function () {
                                             // Apply the search
                                             this.every(function () {
